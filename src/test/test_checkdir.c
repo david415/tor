@@ -110,6 +110,16 @@ test_checkdir_perms(void *testdata)
   tt_int_op(0, ==, (st.st_mode & unix_verify_optsmask));
   tor_free(testdir);
 
+  /* test: check existing dir created with 777 permissions,
+     and verify that CPD_CHECK_MODE_ONLY|CPD_GROUP_READ fails.
+   */
+  testdir = get_datadir_fname("checkdir_exists777_groupread");
+  cpd_chkopts = CPD_CHECK_MODE_ONLY|CPD_GROUP_READ;
+  tt_int_op(0, ==,  mkdir(testdir));
+  tt_int_op(-1, ==, check_private_dir(testdir, cpd_chkopts, NULL));
+  tor_free(testdir);
+
+
   done:
   ;
 }
