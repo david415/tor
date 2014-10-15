@@ -110,6 +110,54 @@ test_checkdir_perms(void *testdata)
   tt_int_op(0, ==, (st.st_mode & unix_verify_optsmask));
   tor_free(testdir);
 
+  /* XXX */
+  /* check that 0 is returned for a valid directory */
+  testdir = get_datadir_fname("checkdir_check_groupread1");
+  cpd_chkopts = CPD_CREATE|CPD_GROUP_READ;
+  tt_int_op(0, ==, check_private_dir(testdir, cpd_chkopts, NULL));
+  cpd_chkopts = CPD_GROUP_READ|CPD_CHECK;
+  tt_int_op(0, ==, check_private_dir(testdir, cpd_chkopts, NULL));
+  tor_free(testdir);
+
+  /* XXX */
+  /* check that 0 is returned and directory has been created ... */
+  testdir = get_datadir_fname("checkdir_check_groupread2");
+  cpd_chkopts = CPD_GROUP_READ|CPD_CHECK;
+  tt_int_op(0, ==, check_private_dir(testdir, cpd_chkopts, NULL));
+  /* ... */
+  tor_free(testdir);
+
+  /* XXX */
+  testdir = get_datadir_fname("checkdir_checkonly_groupread1");
+  cpd_chkopts = CPD_CREATE|CPD_GROUP_READ;
+  tt_int_op(0, ==, check_private_dir(testdir, cpd_chkopts, NULL));
+  cpd_chkopts = CPD_GROUP_READ|CPD_CHECK_MODE_ONLY;
+  tt_int_op(0, ==, check_private_dir(testdir, cpd_chkopts, NULL));
+  tor_free(testdir);
+
+  unsigned new_mode;
+
+  /* XXX */
+  testdir = get_datadir_fname("checkdir_checkonly_groupread2");
+  cpd_chkopts = CPD_CREATE;
+  tt_int_op(0, ==, check_private_dir(testdir, cpd_chkopts, NULL));
+  new_mode = 0777;
+  chmod(testdir, new_mode);
+  cpd_chkopts = CPD_GROUP_READ|CPD_CHECK_MODE_ONLY;
+  tt_int_op(-1, ==, check_private_dir(testdir, cpd_chkopts, NULL));
+  tor_free(testdir);
+
+  /* XXX */
+  testdir = get_datadir_fname("checkdir_checkonly_groupread3");
+  cpd_chkopts = CPD_CREATE;
+  tt_int_op(0, ==, check_private_dir(testdir, cpd_chkopts, NULL));
+  new_mode = 0770;
+  chmod(testdir, new_mode);
+  cpd_chkopts = CPD_GROUP_READ|CPD_CHECK_MODE_ONLY;
+  tt_int_op(-1, ==, check_private_dir(testdir, cpd_chkopts, NULL));
+  tor_free(testdir);
+
+
   done:
   ;
 }
